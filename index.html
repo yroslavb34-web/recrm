@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RE·CRM</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -578,18 +579,52 @@ const MONTHS = ['Январь','Февраль','Март','Апрель','Ма�
 const today = new Date();
 today.setHours(0,0,0,0);
 
-// ── STORAGE ──
+// ── STORAGE (Telegram CloudStorage + localStorage fallback) ──
+const TG = window.Telegram?.WebApp;
+if(TG) { TG.ready(); TG.expand(); }
+const useCloud = !!(TG?.CloudStorage);
+
 function save() {
-  try { localStorage.setItem('recrm', JSON.stringify({tasks:state.tasks,contacts:state.contacts,objects:state.objects})); } catch(e){}
+  const data = JSON.stringify({tasks:state.tasks,contacts:state.contacts,objects:state.objects});
+  if(useCloud) {
+    TG.CloudStorage.setItem('recrm_data', data, ()=>{});
+  }
+  try { localStorage.setItem('recrm', data); } catch(e){}
 }
+
 function load() {
-  try {
-    const d = JSON.parse(localStorage.getItem('recrm')||'{}');
-    state.tasks = d.tasks||[];
-    state.contacts = d.contacts||[];
-    state.objects = d.objects||[];
-  } catch(e){}
-  if(!state.tasks.length && !state.contacts.length && !state.objects.length) seedDemo();
+  if(useCloud) {
+    TG.CloudStorage.getItem('recrm_data', (err, val) => {
+      if(!err && val) {
+        try {
+          const d = JSON.parse(val);
+          state.tasks = d.tasks||[];
+          state.contacts = d.contacts||[];
+          state.objects = d.objects||[];
+        } catch(e){}
+      }
+      if(!state.tasks.length && !state.contacts.length && !state.objects.length) {
+        // try localStorage migration
+        try {
+          const d = JSON.parse(localStorage.getItem('recrm')||'{}');
+          state.tasks = d.tasks||[];
+          state.contacts = d.contacts||[];
+          state.objects = d.objects||[];
+        } catch(e){}
+      }
+      if(!state.tasks.length && !state.contacts.length && !state.objects.length) seedDemo();
+      setGreeting(); renderHome(); renderCalendar();
+    });
+  } else {
+    try {
+      const d = JSON.parse(localStorage.getItem('recrm')||'{}');
+      state.tasks = d.tasks||[];
+      state.contacts = d.contacts||[];
+      state.objects = d.objects||[];
+    } catch(e){}
+    if(!state.tasks.length && !state.contacts.length && !state.objects.length) seedDemo();
+    setGreeting(); renderHome(); renderCalendar();
+  }
 }
 function seedDemo() {
   const fmt = d => d.toISOString().split('T')[0];
@@ -1077,10 +1112,8 @@ function renderAll() {
 }
 
 // ── INIT ──
-load();
-setGreeting();
-renderHome();
-renderCalendar();
+load(); // load() handles setGreeting + renderHome + renderCalendar internally
+
 </script>
 </body>
 </html>
