@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>RE·CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f2f2f7;
+  --surface: #ffffff;
+  --surface2: #f2f2f7;
+  --surface3: #e5e5ea;
+  --accent: #007aff;
+  --accent2: #5856d6;
+  --accent3: #34c759;
+  --accent4: #ff9500;
+  --accent5: #ff3b30;
+  --text: #000000;
+  --text2: #3c3c43cc;
+  --text3: #3c3c4399;
+  --text4: #3c3c4360;
+  --border: rgba(60,60,67,0.1);
+  --border2: rgba(60,60,67,0.18);
+  --radius: 13px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-lg: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+  font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); }
+
+/* ── LAYOUT ── */
+#app { height: 100vh; display: flex; flex-direction: column; max-width: 430px; margin: 0 auto; position: relative; overflow: hidden; }
+
+/* DESKTOP LAYOUT */
+@media (min-width: 768px) {
+  body { background: #e8e8ed; display: flex; align-items: center; justify-content: center; }
+  #app { height: 90vh; max-height: 820px; border-radius: 28px; box-shadow: 0 24px 80px rgba(0,0,0,0.18); overflow: hidden; }
+  #desktop-sidebar { display: flex !important; }
+  #app-inner { flex-direction: row !important; }
+  .bottom-nav { display: none !important; }
+}
+
+#app-inner { display: flex; flex: 1; overflow: hidden; }
+#desktop-sidebar { display: none; width: 220px; background: var(--surface); border-right: 1px solid var(--border); padding: 20px 12px; flex-direction: column; flex-shrink: 0; }
+.sidebar-logo { font-size: 22px; font-weight: 700; color: var(--text); padding: 8px 12px 20px; letter-spacing: -0.5px; }
+.sidebar-logo span { color: var(--accent); }
+.sidebar-section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 12px 6px; margin-top: 8px; }
+.sidebar-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 14px; color: var(--text2); cursor: pointer; transition: background 0.15s; margin-bottom: 2px; font-weight: 500; }
+.sidebar-item:hover { background: var(--surface2); }
+.sidebar-item.active { background: rgba(0,122,255,0.1); color: var(--accent); }
+.sidebar-item i { font-size: 18px; }
+.sidebar-badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; }
+
+#content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* SCREENS */
+.screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+.screen.active { display: flex; }
+
+/* HEADER */
+.screen-header { padding: 16px 20px 8px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.screen-header-row { display: flex; align-items: center; justify-content: space-between; }
+.screen-title { font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+.header-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 20px; font-weight: 300; line-height: 1; transition: transform 0.12s, opacity 0.12s; }
+.header-btn:active { transform: scale(0.92); opacity: 0.8; }
+
+/* SCROLLABLE CONTENT */
+.screen-body { flex: 1; overflow-y: auto; padding: 16px 16px 16px; -webkit-overflow-scrolling: touch; }
+.screen-body::-webkit-scrollbar { display: none; }
+
+/* ── HOME ── */
+.home-greeting { font-size: 17px; font-weight: 600; color: var(--text); }
+.home-date { font-size: 14px; color: var(--text3); margin-top: 1px; margin-bottom: 16px; }
+.widgets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.widget { background: var(--surface); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.15s; position: relative; overflow: hidden; }
+.widget:active { transform: scale(0.97); }
+.widget-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; font-size: 17px; }
+.wi-blue { background: rgba(0,122,255,0.12); color: var(--accent); }
+.wi-purple { background: rgba(88,86,214,0.12); color: var(--accent2); }
+.wi-green { background: rgba(52,199,89,0.12); color: var(--accent3); }
+.wi-amber { background: rgba(255,149,0,0.12); color: var(--accent4); }
+.widget-num { font-size: 30px; font-weight: 700; color: var(--text); letter-spacing: -1px; line-height: 1; }
+.widget-label { font-size: 13px; color: var(--text3); margin-top: 2px; font-weight: 500; }
+.widget-sub { font-size: 11px; color: var(--accent); margin-top: 4px; font-weight: 500; }
+
+.section-head { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 10px; letter-spacing: -0.3px; }
+.section-head-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.section-see-all { font-size: 14px; color: var(--accent); cursor: pointer; font-weight: 500; }
+
+.task-card { background: var(--surface); border-radius: var(--radius); padding: 13px 15px; box-shadow: var(--shadow); margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: transform 0.12s; }
+.task-card:active { transform: scale(0.98); }
+.task-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.task-check.done { background: var(--accent3); border-color: var(--accent3); }
+.task-check.done::after { content: ''; width: 6px; height: 10px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); display: block; }
+.task-info { flex: 1; min-width: 0; }
+.task-name { font-size: 15px; color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.task-name.done-text { color: var(--text3); text-decoration: line-through; }
+.task-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.task-prio { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.prio-red { background: var(--accent5); }
+.prio-amber { background: var(--accent4); }
+.prio-blue { background: var(--accent); }
+.prio-gray { background: var(--text4); }
+
+/* Active objects in home */
+.obj-home-card { background: var(--surface); border-radius: var(--radius-lg); padding: 14px 16px; box-shadow: var(--shadow); margin-bottom: 8px; cursor: pointer; transition: transform 0.12s; }
+.obj-home-card:active { transform: scale(0.98); }
+.obj-home-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+.obj-home-addr { font-size: 15px; font-weight: 600; color: var(--text); }
+.obj-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 6px; }
+.tag-rent { background: rgba(52,199,89,0.12); color: #1a7a35; }
+.tag-sale { background: rgba(0,122,255,0.12); color: var(--accent); }
+.obj-home-meta { font-size: 13px; color: var(--text3); margin-bottom: 8px; }
+.obj-home-price { font-size: 17px; font-weight: 700; color: var(--text); }
+.obj-status-pill { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 6px; }
+.status-active { background: rgba(52,199,89,0.12); color: #1a7a35; }
+.status-progress { background: rgba(0,122,255,0.12); color: var(--accent); }
+.status-hold { background: rgba(255,149,0,0.12); color: #b36a00; }
+
+/* ── TASKS SCREEN ── */
+.calendar-wrap { background: var(--surface); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px; }
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.cal-month-label { font-size: 17px; font-weight: 700; color: var(--text); }
+.cal-nav-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--accent); font-size: 15px; transition: background 0.12s; }
+.cal-nav-btn:active { background: var(--surface3); }
+.cal-days-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; text-align: center; margin-bottom: 4px; }
+.cal-day-name { font-size: 11px; font-weight: 600; color: var(--text3); padding: 2px 0; }
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.cal-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; font-weight: 500; color: var(--text); cursor: pointer; position: relative; transition: background 0.12s; }
+.cal-cell:hover { background: var(--surface2); }
+.cal-cell.other-month { color: var(--text4); }
+.cal-cell.today { background: var(--accent); color: #fff; font-weight: 700; }
+.cal-cell.selected:not(.today) { background: rgba(0,122,255,0.12); color: var(--accent); }
+.cal-cell.has-task::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--accent4); }
+.cal-cell.today.has-task::after { background: rgba(255,255,255,0.8); }
+
+.filter-row { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; }
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-chip { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 1.5px solid var(--border2); color: var(--text2); background: var(--surface); transition: all 0.15s; flex-shrink: 0; }
+.filter-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ── CONTACTS ── */
+.search-bar { background: var(--surface2); border-radius: 12px; padding: 9px 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.search-bar input { border: none; background: transparent; font-size: 15px; color: var(--text); outline: none; flex: 1; font-family: inherit; }
+.search-bar input::placeholder { color: var(--text3); }
+.search-icon { color: var(--text3); font-size: 16px; }
+
+.contacts-group-label { font-size: 13px; font-weight: 600; color: var(--text3); margin: 12px 0 6px; padding: 0 4px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; }
+.contact-row { background: var(--surface); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.12s; }
+.contact-row:active { transform: scale(0.98); }
+.avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+.av-blue { background: rgba(0,122,255,0.15); color: var(--accent); }
+.av-purple { background: rgba(88,86,214,0.15); color: var(--accent2); }
+.av-green { background: rgba(52,199,89,0.15); color: #1a7a35; }
+.av-amber { background: rgba(255,149,0,0.15); color: #b36a00; }
+.av-pink { background: rgba(255,45,85,0.15); color: #c0002e; }
+.av-teal { background: rgba(90,200,250,0.2); color: #007aaa; }
+.contact-info { flex: 1; min-width: 0; }
+.contact-name { font-size: 15px; font-weight: 600; color: var(--text); }
+.contact-phone { font-size: 13px; color: var(--text3); margin-top: 1px; }
+.contact-badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 6px; flex-shrink: 0; }
+.cb-tenant { background: rgba(0,122,255,0.1); color: var(--accent); }
+.cb-owner { background: rgba(88,86,214,0.1); color: var(--accent2); }
+
+/* ── OBJECTS ── */
+.stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
+.stat-box { background: var(--surface); border-radius: var(--radius); padding: 12px; text-align: center; box-shadow: var(--shadow); }
+.stat-num { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+.stat-label { font-size: 12px; color: var(--text3); margin-top: 2px; font-weight: 500; }
+.obj-card { background: var(--surface); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow); margin-bottom: 10px; cursor: pointer; transition: transform 0.12s; }
+.obj-card:active { transform: scale(0.98); }
+.obj-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 5px; }
+.obj-addr { font-size: 16px; font-weight: 700; color: var(--text); }
+.obj-meta-row { font-size: 13px; color: var(--text3); margin-bottom: 10px; }
+.obj-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); }
+.obj-price { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+.obj-owner-tag { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 5px; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav { display: flex; background: rgba(255,255,255,0.9); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 4px 8px; cursor: pointer; transition: opacity 0.15s; opacity: 0.45; }
+.nav-item.active { opacity: 1; }
+.nav-item i { font-size: 22px; color: var(--text); }
+.nav-item.active i { color: var(--accent); }
+.nav-item span { font-size: 10px; color: var(--text2); font-weight: 500; }
+.nav-item.active span { color: var(--accent); }
+
+/* ── MODAL ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: none; align-items: flex-end; z-index: 100; }
+.modal-overlay.open { display: flex; }
+.modal-sheet { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-height: 88vh; overflow-y: auto; padding: 12px 20px 32px; animation: slideUp 0.3s cubic-bezier(0.32,0.72,0,1); }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border2); margin: 0 auto 18px; }
+.modal-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; }
+.form-input, .form-textarea, .form-select { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 14px; font-size: 15px; color: var(--text); font-family: inherit; outline: none; transition: border-color 0.15s; }
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--accent); }
+.form-textarea { resize: none; height: 80px; }
+.form-select { appearance: none; cursor: pointer; }
+.prio-selector { display: flex; gap: 8px; }
+.prio-btn { flex: 1; padding: 9px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.15s; }
+.prio-btn[data-p="high"].selected { background: rgba(255,59,48,0.1); border-color: var(--accent5); color: var(--accent5); }
+.prio-btn[data-p="medium"].selected { background: rgba(255,149,0,0.1); border-color: var(--accent4); color: var(--accent4); }
+.prio-btn[data-p="low"].selected { background: rgba(0,122,255,0.1); border-color: var(--accent); color: var(--accent); }
+.submit-btn { width: 100%; padding: 14px; border-radius: 13px; background: var(--accent); border: none; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 6px; transition: opacity 0.15s; }
+.submit-btn:active { opacity: 0.8; }
+.delete-btn { width: 100%; padding: 14px; border-radius: 13px; background: rgba(255,59,48,0.1); border: none; color: var(--accent5); font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 8px; }
+
+/* ── DETAIL MODAL ── */
+.detail-header { padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.detail-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: -0.3px; }
+.detail-row { display: flex; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.detail-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--surface2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; color: var(--text2); }
+.detail-key { font-size: 14px; color: var(--text3); flex: 1; }
+.detail-value { font-size: 14px; font-weight: 500; color: var(--text); text-align: right; }
+.edit-btn { width: 100%; padding: 14px; border-radius: 13px; background: rgba(0,122,255,0.08); border: none; color: var(--accent); font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 20px; }
+
+/* TABLER ICONS */
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
+
+/* NOTIFICATIONS */
+.toast { position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-10px); background: rgba(0,0,0,0.78); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s; z-index: 200; white-space: nowrap; backdrop-filter: blur(10px); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 48px 20px; }
+.empty-icon { font-size: 48px; color: var(--text4); margin-bottom: 12px; }
+.empty-title { font-size: 17px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+.empty-sub { font-size: 14px; color: var(--text3); }
+
+/* SWIPE ACTIONS */
+.swipe-wrapper { position: relative; overflow: hidden; border-radius: var(--radius); margin-bottom: 8px; }
+.swipe-actions { position: absolute; right: 0; top: 0; bottom: 0; display: flex; align-items: center; }
+.swipe-action-btn { height: 100%; padding: 0 16px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; cursor: pointer; }
+.sab-delete { background: var(--accent5); color: #fff; }
+.sab-edit { background: var(--accent); color: #fff; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+
+<div id="app">
+  <div id="app-inner">
+
+    <!-- DESKTOP SIDEBAR -->
+    <div id="desktop-sidebar">
+      <div class="sidebar-logo">RE<span>·</span>CRM</div>
+      <div class="sidebar-section-label">Меню</div>
+      <div class="sidebar-item active" data-nav="home"><i class="ti ti-home"></i> Главная</div>
+      <div class="sidebar-item" data-nav="tasks"><i class="ti ti-checklist"></i> Задачи <span class="sidebar-badge" id="sb-badge">0</span></div>
+      <div class="sidebar-item" data-nav="contacts"><i class="ti ti-users"></i> Контакты</div>
+      <div class="sidebar-item" data-nav="objects"><i class="ti ti-building"></i> Объекты</div>
+      <div style="margin-top:auto; padding-top:16px; border-top:1px solid var(--border);">
+        <div style="font-size:12px;color:var(--text3);padding:8px 12px;">v1.0 · RE·CRM</div>
+      </div>
+    </div>
+
+    <div id="content-area">
+
+      <!-- HOME -->
+      <div class="screen active" id="screen-home">
+        <div class="screen-header">
+          <div class="screen-header-row">
+            <div>
+              <div class="home-greeting" id="greeting">Добрый день 👋</div>
+              <div class="home-date" id="today-date"></div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div class="widgets-grid">
+            <div class="widget" onclick="navTo('tasks')">
+              <div class="widget-icon wi-blue"><i class="ti ti-checklist"></i></div>
+              <div class="widget-num" id="w-tasks">0</div>
+              <div class="widget-label">Задачи</div>
+              <div class="widget-sub" id="w-tasks-sub">загрузка...</div>
+            </div>
+            <div class="widget" onclick="navTo('objects')">
+              <div class="widget-icon wi-purple"><i class="ti ti-building"></i></div>
+              <div class="widget-num" id="w-objects">0</div>
+              <div class="widget-label">Объекты</div>
+              <div class="widget-sub" id="w-objects-sub">загрузка...</div>
+            </div>
+            <div class="widget" onclick="navTo('contacts')">
+              <div class="widget-icon wi-green"><i class="ti ti-users"></i></div>
+              <div class="widget-num" id="w-tenants">0</div>
+              <div class="widget-label">Арендаторы</div>
+              <div class="widget-sub">контактов</div>
+            </div>
+            <div class="widget" onclick="navTo('contacts')">
+              <div class="widget-icon wi-amber"><i class="ti ti-key"></i></div>
+              <div class="widget-num" id="w-owners">0</div>
+              <div class="widget-label">Собственники</div>
+              <div class="widget-sub">контактов</div>
+            </div>
+          </div>
+
+          <div class="section-head-row">
+            <div class="section-head">Сегодня</div>
+            <div class="section-see-all" onclick="navTo('tasks')">Все</div>
+          </div>
+          <div id="home-tasks-list"></div>
+
+          <div class="section-head-row" style="margin-top:20px">
+            <div class="section-head">Активные объекты</div>
+            <div class="section-see-all" onclick="navTo('objects')">Все</div>
+          </div>
+          <div id="home-objects-list"></div>
+        </div>
+      </div>
+
+      <!-- TASKS -->
+      <div class="screen" id="screen-tasks">
+        <div class="screen-header">
+          <div class="screen-header-row">
+            <div class="screen-title">Задачи</div>
+            <button class="header-btn" onclick="openTaskModal()">+</button>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div class="calendar-wrap">
+            <div class="cal-header">
+              <div class="cal-month-label" id="cal-month"></div>
+              <div style="display:flex;gap:8px">
+                <button class="cal-nav-btn" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+                <button class="cal-nav-btn" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
+              </div>
+            </div>
+            <div class="cal-days-row">
+              <div class="cal-day-name">Пн</div><div class="cal-day-name">Вт</div><div class="cal-day-name">Ср</div>
+              <div class="cal-day-name">Чт</div><div class="cal-day-name">Пт</div><div class="cal-day-name">Сб</div><div class="cal-day-name">Вс</div>
+            </div>
+            <div class="cal-grid" id="cal-grid"></div>
+          </div>
+
+          <div class="filter-row">
+            <div class="filter-chip active" onclick="setFilter('all',this)">Все</div>
+            <div class="filter-chip" onclick="setFilter('today',this)">Сегодня</div>
+            <div class="filter-chip" onclick="setFilter('urgent',this)">Срочные</div>
+            <div class="filter-chip" onclick="setFilter('pending',this)">Активные</div>
+            <div class="filter-chip" onclick="setFilter('done',this)">Выполненные</div>
+          </div>
+
+          <div id="tasks-list"></div>
+        </div>
+      </div>
+
+      <!-- CONTACTS -->
+      <div class="screen" id="screen-contacts">
+        <div class="screen-header">
+          <div class="screen-header-row">
+            <div class="screen-title">Контакты</div>
+            <button class="header-btn" onclick="openContactModal()">+</button>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div class="search-bar">
+            <i class="ti ti-search search-icon"></i>
+            <input type="text" placeholder="Поиск по имени, телефону…" id="contact-search" oninput="renderContacts()">
+          </div>
+          <div id="contacts-list"></div>
+        </div>
+      </div>
+
+      <!-- OBJECTS -->
+      <div class="screen" id="screen-objects">
+        <div class="screen-header">
+          <div class="screen-header-row">
+            <div class="screen-title">Объекты</div>
+            <button class="header-btn" onclick="openObjectModal()">+</button>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div class="stats-row">
+            <div class="stat-box"><div class="stat-num" id="os-total">0</div><div class="stat-label">Всего</div></div>
+            <div class="stat-box"><div class="stat-num" id="os-active">0</div><div class="stat-label">Активных</div></div>
+            <div class="stat-box"><div class="stat-num" id="os-hold">0</div><div class="stat-label">На паузе</div></div>
+          </div>
+          <div class="filter-row">
+            <div class="filter-chip active" onclick="setObjFilter('all',this)">Все</div>
+            <div class="filter-chip" onclick="setObjFilter('rent',this)">Аренда</div>
+            <div class="filter-chip" onclick="setObjFilter('sale',this)">Продажа</div>
+            <div class="filter-chip" onclick="setObjFilter('active',this)">Активные</div>
+            <div class="filter-chip" onclick="setObjFilter('hold',this)">Пауза</div>
+          </div>
+          <div id="objects-list"></div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /app-inner -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-nav="home">
+      <i class="ti ti-home"></i><span>Главная</span>
+    </div>
+    <div class="nav-item" data-nav="tasks">
+      <i class="ti ti-checklist"></i><span>Задачи</span>
+    </div>
+    <div class="nav-item" data-nav="contacts">
+      <i class="ti ti-users"></i><span>Контакты</span>
+    </div>
+    <div class="nav-item" data-nav="objects">
+      <i class="ti ti-building"></i><span>Объекты</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ── MODALS ── -->
+
+<!-- ADD TASK -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="task-modal-title">Новая задача</div>
+    <div class="form-group">
+      <label class="form-label">Название</label>
+      <input class="form-input" id="t-name" placeholder="Что нужно сделать?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Дата</label>
+      <input class="form-input" id="t-date" type="date">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Время</label>
+      <input class="form-input" id="t-time" type="time">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Приоритет</label>
+      <div class="prio-selector">
+        <button class="prio-btn selected" data-p="high" onclick="selectPrio(this)">🔴 Срочно</button>
+        <button class="prio-btn" data-p="medium" onclick="selectPrio(this)">🟡 Средний</button>
+        <button class="prio-btn" data-p="low" onclick="selectPrio(this)">🔵 Низкий</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Тег</label>
+      <select class="form-select" id="t-tag">
+        <option value="">— без тега —</option>
+        <option value="Объект">Объект</option>
+        <option value="Контракт">Контракт</option>
+        <option value="Звонок">Звонок</option>
+        <option value="Показ">Показ</option>
+        <option value="Маркетинг">Маркетинг</option>
+        <option value="Документы">Документы</option>
+        <option value="Прочее">Прочее</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Заметка</label>
+      <textarea class="form-textarea" id="t-note" placeholder="Дополнительная информация…"></textarea>
+    </div>
+    <button class="submit-btn" onclick="saveTask()">Сохранить</button>
+    <button class="submit-btn" style="background:var(--surface2);color:var(--text2);margin-top:8px" onclick="closeModal('modal-task')">Отмена</button>
+    <button class="delete-btn" id="task-delete-btn" style="display:none" onclick="deleteTask()">Удалить задачу</button>
+  </div>
+</div>
+
+<!-- ADD CONTACT -->
+<div class="modal-overlay" id="modal-contact">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="contact-modal-title">Новый контакт</div>
+    <div class="form-group">
+      <label class="form-label">Имя</label>
+      <input class="form-input" id="c-name" placeholder="Полное имя">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Телефон</label>
+      <input class="form-input" id="c-phone" type="tel" placeholder="+7 000 000-00-00">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" id="c-email" type="email" placeholder="email@example.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Тип</label>
+      <select class="form-select" id="c-type">
+        <option value="tenant">Арендатор</option>
+        <option value="owner">Собственник</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Объект / Адрес</label>
+      <input class="form-input" id="c-obj" placeholder="К какому объекту привязан?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Заметка</label>
+      <textarea class="form-textarea" id="c-note" placeholder="Дополнительная информация…"></textarea>
+    </div>
+    <button class="submit-btn" onclick="saveContact()">Сохранить</button>
+    <button class="submit-btn" style="background:var(--surface2);color:var(--text2);margin-top:8px" onclick="closeModal('modal-contact')">Отмена</button>
+    <button class="delete-btn" id="contact-delete-btn" style="display:none" onclick="deleteContact()">Удалить контакт</button>
+  </div>
+</div>
+
+<!-- ADD OBJECT -->
+<div class="modal-overlay" id="modal-object">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="obj-modal-title">Новый объект</div>
+    <div class="form-group">
+      <label class="form-label">Адрес</label>
+      <input class="form-input" id="o-addr" placeholder="ул. Ленина, 12, кв. 4">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Тип сделки</label>
+      <select class="form-select" id="o-type">
+        <option value="rent">Аренда</option>
+        <option value="sale">Продажа</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Цена</label>
+      <input class="form-input" id="o-price" placeholder="45 000 ₽/мес или 7 800 000 ₽">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Площадь</label>
+      <input class="form-input" id="o-area" placeholder="52 м²">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Собственник</label>
+      <input class="form-input" id="o-owner" placeholder="ФИО или контакт">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Статус</label>
+      <select class="form-select" id="o-status">
+        <option value="active">Активен</option>
+        <option value="progress">В работе</option>
+        <option value="hold">На паузе</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Описание</label>
+      <textarea class="form-textarea" id="o-desc" placeholder="Особенности, детали объекта…"></textarea>
+    </div>
+    <button class="submit-btn" onclick="saveObject()">Сохранить</button>
+    <button class="submit-btn" style="background:var(--surface2);color:var(--text2);margin-top:8px" onclick="closeModal('modal-object')">Отмена</button>
+    <button class="delete-btn" id="obj-delete-btn" style="display:none" onclick="deleteObject()">Удалить объект</button>
+  </div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div id="detail-content"></div>
+    <button class="submit-btn" style="background:var(--surface2);color:var(--text2);margin-top:8px" onclick="closeModal('modal-detail')">Закрыть</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+let state = {
+  tasks: [],
+  contacts: [],
+  objects: [],
+  calYear: new Date().getFullYear(),
+  calMonth: new Date().getMonth(),
+  taskFilter: 'all',
+  objFilter: 'all',
+  editId: null,
+  editType: null,
+  selectedCalDate: null
+};
+
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const today = new Date();
+today.setHours(0,0,0,0);
+
+// ── STORAGE ──
+function save() {
+  try { localStorage.setItem('recrm', JSON.stringify({tasks:state.tasks,contacts:state.contacts,objects:state.objects})); } catch(e){}
+}
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('recrm')||'{}');
+    state.tasks = d.tasks||[];
+    state.contacts = d.contacts||[];
+    state.objects = d.objects||[];
+  } catch(e){}
+  if(!state.tasks.length && !state.contacts.length && !state.objects.length) seedDemo();
+}
+function seedDemo() {
+  const fmt = d => d.toISOString().split('T')[0];
+  const t = new Date(); t.setHours(0,0,0,0);
+  const t1 = new Date(t); t1.setDate(t1.getDate()+1);
+  const t2 = new Date(t); t2.setDate(t2.getDate()+3);
+  const t3 = new Date(t); t3.setDate(t3.getDate()+6);
+  state.tasks = [
+    {id:uid(),name:'Показ кв. на Ленина, 12',date:fmt(t),time:'10:00',prio:'high',tag:'Показ',note:'Клиент — Новиков А.',done:true},
+    {id:uid(),name:'Договор с Ивановым И.П.',date:fmt(t),time:'14:30',prio:'high',tag:'Контракт',note:'Подписание',done:false},
+    {id:uid(),name:'Звонок собственнику Садовая 5',date:fmt(t),time:'17:00',prio:'medium',tag:'Звонок',note:'',done:false},
+    {id:uid(),name:'Оценка объекта Садовая 5',date:fmt(t1),time:'10:00',prio:'medium',tag:'Объект',note:'',done:false},
+    {id:uid(),name:'Реклама квартиры на Мира, 8',date:fmt(t3),time:'',prio:'low',tag:'Маркетинг',note:'',done:false},
+  ];
+  state.contacts = [
+    {id:uid(),name:'Алексей Новиков',phone:'+7 921 123-45-67',email:'novikov@mail.ru',type:'tenant',obj:'Ленина, 12',note:'Надёжный арендатор'},
+    {id:uid(),name:'Мария Смирнова',phone:'+7 916 987-65-43',email:'maria.s@gmail.com',type:'tenant',obj:'Мира, 8',note:''},
+    {id:uid(),name:'Дмитрий Орлов',phone:'+7 925 555-44-33',email:'',type:'tenant',obj:'Гагарина, 3',note:'Ищет 2-комн.'},
+    {id:uid(),name:'Виктор Козлов',phone:'+7 903 456-78-90',email:'v.kozlov@bk.ru',type:'owner',obj:'Садовая, 5',note:'Продаёт срочно'},
+    {id:uid(),name:'Елена Петрова',phone:'+7 495 222-33-44',email:'ep@yandex.ru',type:'owner',obj:'Ленина, 12',note:''},
+    {id:uid(),name:'Дмитрий Морозов',phone:'+7 812 555-66-77',email:'',type:'owner',obj:'Мира, 8; Пушкина, 22',note:'Два объекта'},
+  ];
+  state.objects = [
+    {id:uid(),addr:'Ленина, 12, кв. 4',type:'rent',price:'45 000 ₽/мес',area:'52 м²',owner:'Елена Петрова',status:'active',desc:'2-комн., 3/9 эт., свежий ремонт'},
+    {id:uid(),addr:'Садовая, 5',type:'sale',price:'7 800 000 ₽',area:'68 м²',owner:'Виктор Козлов',status:'progress',desc:'3-комн., 5/12 эт., виды на парк'},
+    {id:uid(),addr:'Мира, 8, кв. 17',type:'rent',price:'38 000 ₽/мес',area:'44 м²',owner:'Дмитрий Морозов',status:'active',desc:'1-комн., 2/5 эт., рядом метро'},
+    {id:uid(),addr:'Пушкина, 22',type:'sale',price:'12 500 000 ₽',area:'95 м²',owner:'Дмитрий Морозов',status:'hold',desc:'4-комн., пентхаус, терраса'},
+    {id:uid(),addr:'Гагарина, 3',type:'rent',price:'55 000 ₽/мес',area:'76 м²',owner:'Частное лицо',status:'active',desc:'3-комн., 8/16 эт., панорамные окна'},
+  ];
+  save();
+}
+
+function uid() { return Math.random().toString(36).slice(2,10); }
+
+// ── NAV ──
+let currentScreen = 'home';
+function navTo(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item, .sidebar-item').forEach(n=>{
+    n.classList.toggle('active', n.dataset.nav===id);
+  });
+  currentScreen = id;
+  if(id==='home') renderHome();
+  if(id==='tasks') { renderCalendar(); renderTasks(); }
+  if(id==='contacts') renderContacts();
+  if(id==='objects') renderObjects();
+}
+
+document.querySelectorAll('.nav-item, .sidebar-item').forEach(n=>{
+  n.addEventListener('click',()=>navTo(n.dataset.nav));
+});
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// ── MODAL ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+// ── HOME ──
+function setGreeting() {
+  const h = new Date().getHours();
+  const g = h<12?'Доброе утро 🌅':h<17?'Добрый день ☀️':'Добрый вечер 🌙';
+  document.getElementById('greeting').textContent = g;
+  const days=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+  const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  const now=new Date();
+  document.getElementById('today-date').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+function renderHome() {
+  const todayStr = today.toISOString().split('T')[0];
+  const urgent = state.tasks.filter(t=>!t.done&&t.prio==='high');
+  const active = state.objects.filter(o=>o.status==='active');
+  document.getElementById('w-tasks').textContent = state.tasks.filter(t=>!t.done).length;
+  document.getElementById('w-tasks-sub').textContent = urgent.length ? `${urgent.length} срочных` : 'нет срочных';
+  document.getElementById('w-objects').textContent = state.objects.length;
+  document.getElementById('w-objects-sub').textContent = `${active.length} активных`;
+  document.getElementById('w-tenants').textContent = state.contacts.filter(c=>c.type==='tenant').length;
+  document.getElementById('w-owners').textContent = state.contacts.filter(c=>c.type==='owner').length;
+  document.getElementById('sb-badge').textContent = state.tasks.filter(t=>!t.done).length;
+
+  const todayTasks = state.tasks.filter(t=>t.date===todayStr).slice(0,4);
+  const tl = document.getElementById('home-tasks-list');
+  if(!todayTasks.length) { tl.innerHTML=`<div class="empty-state"><div class="empty-icon"><i class="ti ti-circle-check"></i></div><div class="empty-title">На сегодня задач нет</div><div class="empty-sub">Добавьте задачу на вкладке Задачи</div></div>`; }
+  else { tl.innerHTML = todayTasks.map(t=>taskCardHTML(t)).join(''); }
+
+  const ol = document.getElementById('home-objects-list');
+  if(!active.length) { ol.innerHTML=`<div class="empty-state"><div class="empty-icon"><i class="ti ti-building"></i></div><div class="empty-title">Нет активных объектов</div></div>`; }
+  else { ol.innerHTML = active.slice(0,3).map(o=>objHomeHTML(o)).join(''); }
+}
+
+function taskCardHTML(t) {
+  const prioColor = t.prio==='high'?'prio-red':t.prio==='medium'?'prio-amber':'prio-blue';
+  const doneClass = t.done?'done':'';
+  const textClass = t.done?'done-text':'';
+  const tag = t.tag?`<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;background:rgba(0,122,255,0.08);color:var(--accent);margin-left:6px">${t.tag}</span>`:'';
+  const meta = [t.time?t.time:null, t.note?t.note:null].filter(Boolean).join(' · ');
+  return `<div class="task-card" onclick="openTaskDetail('${t.id}')">
+    <div class="task-check ${doneClass}" onclick="event.stopPropagation();toggleTask('${t.id}')"></div>
+    <div class="task-info">
+      <div class="task-name ${textClass}">${t.name}${tag}</div>
+      ${meta?`<div class="task-meta">${meta}</div>`:''}
+      ${t.date?`<div class="task-meta">${formatDate(t.date)}</div>`:''}
+    </div>
+    <div class="task-prio ${prioColor}"></div>
+  </div>`;
+}
+
+function objHomeHTML(o) {
+  const statusMap = {active:'Активен',progress:'В работе',hold:'На паузе'};
+  const statusClass = {active:'status-active',progress:'status-progress',hold:'status-hold'};
+  const typeLabel = o.type==='rent'?'Аренда':'Продажа';
+  const typeClass = o.type==='rent'?'tag-rent':'tag-sale';
+  return `<div class="obj-home-card" onclick="openObjectDetail('${o.id}')">
+    <div class="obj-home-top">
+      <div class="obj-home-addr">${o.addr}</div>
+      <span class="obj-tag ${typeClass}">${typeLabel}</span>
+    </div>
+    <div class="obj-home-meta">${o.area||''}${o.owner?` · ${o.owner}`:''}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="obj-home-price">${o.price}</div>
+      <span class="obj-status-pill ${statusClass[o.status]}">${statusMap[o.status]}</span>
+    </div>
+  </div>`;
+}
+
+function formatDate(str) {
+  if(!str) return '';
+  const d = new Date(str+'T00:00:00');
+  const months=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  const now = new Date(); now.setHours(0,0,0,0);
+  const diff = Math.round((d-now)/86400000);
+  if(diff===0) return 'Сегодня';
+  if(diff===1) return 'Завтра';
+  if(diff===-1) return 'Вчера';
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+// ── CALENDAR ──
+function renderCalendar() {
+  const { calYear: y, calMonth: m } = state;
+  document.getElementById('cal-month').textContent = `${MONTHS[m]} ${y}`;
+  const grid = document.getElementById('cal-grid');
+  const firstDay = new Date(y,m,1).getDay();
+  const offset = firstDay===0?6:firstDay-1;
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const daysInPrev = new Date(y,m,0).getDate();
+  const taskDates = new Set(state.tasks.map(t=>t.date));
+  let html = '';
+  for(let i=0;i<offset;i++){
+    html+=`<div class="cal-cell other-month">${daysInPrev-offset+1+i}</div>`;
+  }
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = dateStr===today.toISOString().split('T')[0];
+    const isSelected = dateStr===state.selectedCalDate;
+    const hasTask = taskDates.has(dateStr);
+    const cls = [isToday?'today':'',isSelected&&!isToday?'selected':'',hasTask?'has-task':''].join(' ');
+    html+=`<div class="cal-cell ${cls}" onclick="selectCalDate('${dateStr}')">${d}</div>`;
+  }
+  const remaining = (7 - (offset+daysInMonth)%7)%7;
+  for(let i=1;i<=remaining;i++) html+=`<div class="cal-cell other-month">${i}</div>`;
+  grid.innerHTML = html;
+}
+
+function changeMonth(dir) {
+  state.calMonth += dir;
+  if(state.calMonth>11){state.calMonth=0;state.calYear++;}
+  if(state.calMonth<0){state.calMonth=11;state.calYear--;}
+  state.selectedCalDate = null;
+  renderCalendar();
+  renderTasks();
+}
+
+function selectCalDate(d) {
+  state.selectedCalDate = state.selectedCalDate===d ? null : d;
+  renderCalendar();
+  renderTasks();
+}
+
+// ── TASKS ──
+let taskFilter = 'all';
+function setFilter(f, el) {
+  taskFilter = f;
+  document.querySelectorAll('#screen-tasks .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderTasks();
+}
+
+function renderTasks() {
+  let tasks = [...state.tasks];
+  const todayStr = today.toISOString().split('T')[0];
+  if(state.selectedCalDate) tasks = tasks.filter(t=>t.date===state.selectedCalDate);
+  else {
+    if(taskFilter==='today') tasks=tasks.filter(t=>t.date===todayStr);
+    else if(taskFilter==='urgent') tasks=tasks.filter(t=>t.prio==='high'&&!t.done);
+    else if(taskFilter==='pending') tasks=tasks.filter(t=>!t.done);
+    else if(taskFilter==='done') tasks=tasks.filter(t=>t.done);
+  }
+  tasks.sort((a,b)=>{
+    if(a.done!==b.done) return a.done?1:-1;
+    const pd={high:0,medium:1,low:2};
+    if(!a.done&&!b.done&&pd[a.prio]!==pd[b.prio]) return pd[a.prio]-pd[b.prio];
+    return (a.date||'').localeCompare(b.date||'');
+  });
+  const el = document.getElementById('tasks-list');
+  if(!tasks.length) {
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon"><i class="ti ti-circle-check"></i></div><div class="empty-title">Задач нет</div><div class="empty-sub">Нажмите + чтобы добавить</div></div>`;
+    return;
+  }
+  el.innerHTML = tasks.map(t=>taskCardHTML(t)).join('');
+}
+
+function toggleTask(id) {
+  const t = state.tasks.find(t=>t.id===id);
+  if(t) { t.done=!t.done; save(); renderAll(); showToast(t.done?'✓ Выполнено':'Отмечено как активное'); }
+}
+
+// ── TASK MODAL ──
+let editTaskId = null;
+function openTaskModal(id) {
+  editTaskId = id||null;
+  if(id) {
+    const t = state.tasks.find(x=>x.id===id);
+    document.getElementById('task-modal-title').textContent='Редактировать задачу';
+    document.getElementById('t-name').value=t.name;
+    document.getElementById('t-date').value=t.date||'';
+    document.getElementById('t-time').value=t.time||'';
+    document.getElementById('t-tag').value=t.tag||'';
+    document.getElementById('t-note').value=t.note||'';
+    document.querySelectorAll('.prio-btn').forEach(b=>{b.classList.toggle('selected',b.dataset.p===t.prio);});
+    document.getElementById('task-delete-btn').style.display='block';
+  } else {
+    document.getElementById('task-modal-title').textContent='Новая задача';
+    document.getElementById('t-name').value='';
+    document.getElementById('t-date').value=today.toISOString().split('T')[0];
+    document.getElementById('t-time').value='';
+    document.getElementById('t-tag').value='';
+    document.getElementById('t-note').value='';
+    document.querySelectorAll('.prio-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));
+    document.getElementById('task-delete-btn').style.display='none';
+  }
+  openModal('modal-task');
+}
+
+function selectPrio(el) {
+  document.querySelectorAll('.prio-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function saveTask() {
+  const name = document.getElementById('t-name').value.trim();
+  if(!name) { showToast('⚠️ Введите название'); return; }
+  const prio = document.querySelector('.prio-btn.selected')?.dataset.p||'medium';
+  const task = {
+    id: editTaskId||uid(),
+    name,
+    date: document.getElementById('t-date').value,
+    time: document.getElementById('t-time').value,
+    prio,
+    tag: document.getElementById('t-tag').value,
+    note: document.getElementById('t-note').value,
+    done: editTaskId ? state.tasks.find(t=>t.id===editTaskId)?.done||false : false
+  };
+  if(editTaskId) { const i=state.tasks.findIndex(t=>t.id===editTaskId); state.tasks[i]=task; }
+  else { state.tasks.push(task); }
+  save(); closeModal('modal-task'); renderAll();
+  showToast(editTaskId?'✓ Задача обновлена':'✓ Задача добавлена');
+}
+
+function deleteTask() {
+  if(!editTaskId) return;
+  state.tasks = state.tasks.filter(t=>t.id!==editTaskId);
+  save(); closeModal('modal-task'); renderAll();
+  showToast('Задача удалена');
+}
+
+function openTaskDetail(id) {
+  const t = state.tasks.find(x=>x.id===id);
+  const prioLabel = {high:'🔴 Срочный',medium:'🟡 Средний',low:'🔵 Низкий'};
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-header">
+      <div class="detail-title">${t.name}</div>
+    </div>
+    ${t.date?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-calendar"></i></div><div class="detail-key">Дата</div><div class="detail-value">${formatDate(t.date)}${t.time?' · '+t.time:''}</div></div>`:''}
+    <div class="detail-row"><div class="detail-icon"><i class="ti ti-flag"></i></div><div class="detail-key">Приоритет</div><div class="detail-value">${prioLabel[t.prio]||'—'}</div></div>
+    ${t.tag?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-tag"></i></div><div class="detail-key">Тег</div><div class="detail-value">${t.tag}</div></div>`:''}
+    ${t.note?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-notes"></i></div><div class="detail-key">Заметка</div><div class="detail-value" style="text-align:right;max-width:60%">${t.note}</div></div>`:''}
+    <div class="detail-row"><div class="detail-icon"><i class="ti ti-circle-check"></i></div><div class="detail-key">Статус</div><div class="detail-value">${t.done?'✓ Выполнено':'В работе'}</div></div>
+    <button class="edit-btn" onclick="closeModal('modal-detail');openTaskModal('${t.id}')">Редактировать</button>
+  `;
+  openModal('modal-detail');
+}
+
+// ── CONTACTS ──
+let editContactId = null;
+function openContactModal(id) {
+  editContactId = id||null;
+  if(id) {
+    const c=state.contacts.find(x=>x.id===id);
+    document.getElementById('contact-modal-title').textContent='Редактировать контакт';
+    document.getElementById('c-name').value=c.name;
+    document.getElementById('c-phone').value=c.phone||'';
+    document.getElementById('c-email').value=c.email||'';
+    document.getElementById('c-type').value=c.type;
+    document.getElementById('c-obj').value=c.obj||'';
+    document.getElementById('c-note').value=c.note||'';
+    document.getElementById('contact-delete-btn').style.display='block';
+  } else {
+    document.getElementById('contact-modal-title').textContent='Новый контакт';
+    ['c-name','c-phone','c-email','c-obj','c-note'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('c-type').value='tenant';
+    document.getElementById('contact-delete-btn').style.display='none';
+  }
+  openModal('modal-contact');
+}
+
+function saveContact() {
+  const name=document.getElementById('c-name').value.trim();
+  if(!name){showToast('⚠️ Введите имя');return;}
+  const c={id:editContactId||uid(),name,phone:document.getElementById('c-phone').value,email:document.getElementById('c-email').value,type:document.getElementById('c-type').value,obj:document.getElementById('c-obj').value,note:document.getElementById('c-note').value};
+  if(editContactId){const i=state.contacts.findIndex(x=>x.id===editContactId);state.contacts[i]=c;}
+  else state.contacts.push(c);
+  save();closeModal('modal-contact');renderAll();
+  showToast(editContactId?'✓ Контакт обновлён':'✓ Контакт добавлен');
+}
+
+function deleteContact() {
+  state.contacts=state.contacts.filter(c=>c.id!==editContactId);
+  save();closeModal('modal-contact');renderAll();showToast('Контакт удалён');
+}
+
+function renderContacts() {
+  const q=(document.getElementById('contact-search')?.value||'').toLowerCase();
+  let contacts=state.contacts.filter(c=>!q||c.name.toLowerCase().includes(q)||(c.phone||'').includes(q));
+  const tenants=contacts.filter(c=>c.type==='tenant');
+  const owners=contacts.filter(c=>c.type==='owner');
+  const el=document.getElementById('contacts-list');
+  let html='';
+  const avatarColors=['av-blue','av-purple','av-green','av-amber','av-pink','av-teal'];
+  const initials=n=>n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const colorFor=(n)=>avatarColors[n.charCodeAt(0)%avatarColors.length];
+  if(!contacts.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon"><i class="ti ti-users"></i></div><div class="empty-title">Контактов нет</div><div class="empty-sub">Нажмите + чтобы добавить</div></div>`;return;}
+  if(tenants.length){
+    html+=`<div class="contacts-group-label">Арендаторы (${tenants.length})</div>`;
+    html+=tenants.map(c=>`<div class="contact-row" onclick="openContactDetail('${c.id}')"><div class="avatar ${colorFor(c.name)}">${initials(c.name)}</div><div class="contact-info"><div class="contact-name">${c.name}</div><div class="contact-phone">${c.phone||c.email||'—'}</div></div><span class="contact-badge cb-tenant">Арендатор</span></div>`).join('');
+  }
+  if(owners.length){
+    html+=`<div class="contacts-group-label">Собственники (${owners.length})</div>`;
+    html+=owners.map(c=>`<div class="contact-row" onclick="openContactDetail('${c.id}')"><div class="avatar ${colorFor(c.name)}">${initials(c.name)}</div><div class="contact-info"><div class="contact-name">${c.name}</div><div class="contact-phone">${c.phone||c.email||'—'}</div></div><span class="contact-badge cb-owner">Собственник</span></div>`).join('');
+  }
+  el.innerHTML=html;
+}
+
+function openContactDetail(id) {
+  const c=state.contacts.find(x=>x.id===id);
+  const typeLabel=c.type==='tenant'?'Арендатор':'Собственник';
+  document.getElementById('detail-content').innerHTML=`
+    <div class="detail-header"><div class="detail-title">${c.name}</div></div>
+    ${c.phone?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-phone"></i></div><div class="detail-key">Телефон</div><div class="detail-value"><a href="tel:${c.phone}" style="color:var(--accent);text-decoration:none">${c.phone}</a></div></div>`:''}
+    ${c.email?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-mail"></i></div><div class="detail-key">Email</div><div class="detail-value"><a href="mailto:${c.email}" style="color:var(--accent);text-decoration:none">${c.email}</a></div></div>`:''}
+    <div class="detail-row"><div class="detail-icon"><i class="ti ti-tag"></i></div><div class="detail-key">Тип</div><div class="detail-value">${typeLabel}</div></div>
+    ${c.obj?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-building"></i></div><div class="detail-key">Объект</div><div class="detail-value">${c.obj}</div></div>`:''}
+    ${c.note?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-notes"></i></div><div class="detail-key">Заметка</div><div class="detail-value" style="max-width:60%;text-align:right">${c.note}</div></div>`:''}
+    <button class="edit-btn" onclick="closeModal('modal-detail');openContactModal('${c.id}')">Редактировать</button>
+  `;
+  openModal('modal-detail');
+}
+
+// ── OBJECTS ──
+let editObjId = null;
+let objFilter = 'all';
+function setObjFilter(f,el) {
+  objFilter=f;
+  document.querySelectorAll('#screen-objects .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderObjects();
+}
+
+function openObjectModal(id) {
+  editObjId=id||null;
+  if(id){
+    const o=state.objects.find(x=>x.id===id);
+    document.getElementById('obj-modal-title').textContent='Редактировать объект';
+    document.getElementById('o-addr').value=o.addr;
+    document.getElementById('o-type').value=o.type;
+    document.getElementById('o-price').value=o.price||'';
+    document.getElementById('o-area').value=o.area||'';
+    document.getElementById('o-owner').value=o.owner||'';
+    document.getElementById('o-status').value=o.status||'active';
+    document.getElementById('o-desc').value=o.desc||'';
+    document.getElementById('obj-delete-btn').style.display='block';
+  } else {
+    document.getElementById('obj-modal-title').textContent='Новый объект';
+    ['o-addr','o-price','o-area','o-owner','o-desc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('o-type').value='rent';
+    document.getElementById('o-status').value='active';
+    document.getElementById('obj-delete-btn').style.display='none';
+  }
+  openModal('modal-object');
+}
+
+function saveObject() {
+  const addr=document.getElementById('o-addr').value.trim();
+  if(!addr){showToast('⚠️ Введите адрес');return;}
+  const o={id:editObjId||uid(),addr,type:document.getElementById('o-type').value,price:document.getElementById('o-price').value,area:document.getElementById('o-area').value,owner:document.getElementById('o-owner').value,status:document.getElementById('o-status').value,desc:document.getElementById('o-desc').value};
+  if(editObjId){const i=state.objects.findIndex(x=>x.id===editObjId);state.objects[i]=o;}
+  else state.objects.push(o);
+  save();closeModal('modal-object');renderAll();
+  showToast(editObjId?'✓ Объект обновлён':'✓ Объект добавлен');
+}
+
+function deleteObject() {
+  state.objects=state.objects.filter(o=>o.id!==editObjId);
+  save();closeModal('modal-object');renderAll();showToast('Объект удалён');
+}
+
+function renderObjects() {
+  let objs=[...state.objects];
+  if(objFilter==='rent') objs=objs.filter(o=>o.type==='rent');
+  else if(objFilter==='sale') objs=objs.filter(o=>o.type==='sale');
+  else if(objFilter==='active') objs=objs.filter(o=>o.status==='active');
+  else if(objFilter==='hold') objs=objs.filter(o=>o.status==='hold');
+  document.getElementById('os-total').textContent=state.objects.length;
+  document.getElementById('os-active').textContent=state.objects.filter(o=>o.status==='active').length;
+  document.getElementById('os-hold').textContent=state.objects.filter(o=>o.status==='hold').length;
+  const el=document.getElementById('objects-list');
+  if(!objs.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon"><i class="ti ti-building"></i></div><div class="empty-title">Объектов нет</div><div class="empty-sub">Нажмите + чтобы добавить</div></div>`;return;}
+  const statusMap={active:'Активен',progress:'В работе',hold:'На паузе'};
+  const statusClass={active:'status-active',progress:'status-progress',hold:'status-hold'};
+  el.innerHTML=objs.map(o=>`<div class="obj-card" onclick="openObjectDetail('${o.id}')">
+    <div class="obj-card-top">
+      <div class="obj-addr">${o.addr}</div>
+      <span class="obj-tag ${o.type==='rent'?'tag-rent':'tag-sale'}">${o.type==='rent'?'Аренда':'Продажа'}</span>
+    </div>
+    <div class="obj-meta-row">${[o.area,o.owner].filter(Boolean).join(' · ')}</div>
+    ${o.desc?`<div class="obj-meta-row" style="font-size:12px;color:var(--text4)">${o.desc}</div>`:''}
+    <div class="obj-footer">
+      <div class="obj-price">${o.price||'—'}</div>
+      <span class="obj-status-pill ${statusClass[o.status]}">${statusMap[o.status]}</span>
+    </div>
+  </div>`).join('');
+}
+
+function openObjectDetail(id) {
+  const o=state.objects.find(x=>x.id===id);
+  const statusMap={active:'✅ Активен',progress:'🔵 В работе',hold:'⏸ На паузе'};
+  const typeLabel=o.type==='rent'?'Аренда':'Продажа';
+  document.getElementById('detail-content').innerHTML=`
+    <div class="detail-header"><div class="detail-title">${o.addr}</div></div>
+    <div class="detail-row"><div class="detail-icon"><i class="ti ti-tag"></i></div><div class="detail-key">Тип</div><div class="detail-value">${typeLabel}</div></div>
+    ${o.price?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-currency-ruble"></i></div><div class="detail-key">Цена</div><div class="detail-value">${o.price}</div></div>`:''}
+    ${o.area?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-ruler"></i></div><div class="detail-key">Площадь</div><div class="detail-value">${o.area}</div></div>`:''}
+    ${o.owner?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-user"></i></div><div class="detail-key">Собственник</div><div class="detail-value">${o.owner}</div></div>`:''}
+    <div class="detail-row"><div class="detail-icon"><i class="ti ti-circle-dot"></i></div><div class="detail-key">Статус</div><div class="detail-value">${statusMap[o.status]}</div></div>
+    ${o.desc?`<div class="detail-row"><div class="detail-icon"><i class="ti ti-notes"></i></div><div class="detail-key">Описание</div><div class="detail-value" style="max-width:65%;text-align:right">${o.desc}</div></div>`:''}
+    <button class="edit-btn" onclick="closeModal('modal-detail');openObjectModal('${o.id}')">Редактировать</button>
+  `;
+  openModal('modal-detail');
+}
+
+// ── RENDER ALL ──
+function renderAll() {
+  if(currentScreen==='home') renderHome();
+  if(currentScreen==='tasks') { renderCalendar(); renderTasks(); }
+  if(currentScreen==='contacts') renderContacts();
+  if(currentScreen==='objects') renderObjects();
+  document.getElementById('sb-badge').textContent=state.tasks.filter(t=>!t.done).length;
+  // always update home widgets in background
+  const todayStr=today.toISOString().split('T')[0];
+  document.getElementById('w-tasks').textContent=state.tasks.filter(t=>!t.done).length;
+  document.getElementById('w-objects').textContent=state.objects.length;
+  document.getElementById('w-tenants').textContent=state.contacts.filter(c=>c.type==='tenant').length;
+  document.getElementById('w-owners').textContent=state.contacts.filter(c=>c.type==='owner').length;
+}
+
+// ── INIT ──
+load();
+setGreeting();
+renderHome();
+renderCalendar();
+</script>
+</body>
+</html>
